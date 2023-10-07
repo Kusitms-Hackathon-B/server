@@ -12,6 +12,7 @@ import java.util.List;
 public class MainPageResponse {
 
     List<NutrientInfo> nutrientInfoList;
+    String goodDietName;
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,7 +28,7 @@ public class MainPageResponse {
         }
     }
 
-    public static MainPageResponse of(List<NutrientInfo> nutrientInfoList) {
-        return new MainPageResponse(nutrientInfoList);
+    public static MainPageResponse of(List<NutrientInfo> nutrientInfoList, String goodDietName) {
+        return new MainPageResponse(nutrientInfoList, goodDietName);
     }
 }

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.kusitmshackthon.domain.foodinfo.entity.QFoodInfo.foodInfo;
 import static com.example.kusitmshackthon.domain.healthlog.entity.QHealthLog.healthLog;
 
 @Slf4j
@@ -62,26 +63,26 @@ public class MemberService {
         Map<String, Float> diffHashMap = new HashMap<>();
         Map<String, Float> orignHashMap = new HashMap<>();
 
-        orignHashMap.put("protein", recentlyHealthLog.getProtein());
-        orignHashMap.put("calcium", recentlyHealthLog.getCalcium());
-        orignHashMap.put("sodium", recentlyHealthLog.getSodium());
-        orignHashMap.put("fe", recentlyHealthLog.getFe());
-        orignHashMap.put("zinc", recentlyHealthLog.getZinc());
+        orignHashMap.put("단백질", recentlyHealthLog.getProtein());
+        orignHashMap.put("칼숨", recentlyHealthLog.getCalcium());
+        orignHashMap.put("나트륨", recentlyHealthLog.getSodium());
+        orignHashMap.put("철분", recentlyHealthLog.getFe());
+        orignHashMap.put("아연", recentlyHealthLog.getZinc());
 
         if (recentlyHealthLog.getProtein() != 0) {
-            diffHashMap.put("protein", recentlyHealthLog.getProtein() - standardHealthLog.getProtein());
+            diffHashMap.put("단백질", recentlyHealthLog.getProtein() - standardHealthLog.getProtein());
         }
         if (recentlyHealthLog.getCalcium() != 0) {
-            diffHashMap.put("calcium", recentlyHealthLog.getCalcium() - standardHealthLog.getCalcium());
+            diffHashMap.put("칼숨", recentlyHealthLog.getCalcium() - standardHealthLog.getCalcium());
         }
         if (recentlyHealthLog.getSodium() != 0) {
-            diffHashMap.put("sodium", recentlyHealthLog.getSodium() - standardHealthLog.getSodium());
+            diffHashMap.put("나트륨", recentlyHealthLog.getSodium() - standardHealthLog.getSodium());
         }
         if (recentlyHealthLog.getFe() != 0) {
-            diffHashMap.put("fe", recentlyHealthLog.getFe() - standardHealthLog.getFe());
+            diffHashMap.put("철분", recentlyHealthLog.getFe() - standardHealthLog.getFe());
         }
         if (recentlyHealthLog.getZinc() != 0) {
-            diffHashMap.put("zinc", recentlyHealthLog.getZinc() - standardHealthLog.getZinc());
+            diffHashMap.put("아연", recentlyHealthLog.getZinc() - standardHealthLog.getZinc());
         }
 
 
@@ -104,8 +105,75 @@ public class MemberService {
                 }
             }
         }
+        // 이제 추천 식단을 찾는다.
 
-        return MainPageResponse.of(nutrientInfoList);
+        MainPageResponse.NutrientInfo mostLackNutrient = nutrientInfoList.get(0);
+        String mostLackNutrientName = kor2eng(mostLackNutrient.getName());
+
+        String goodDiet;
+        if (mostLackNutrientName.equals("protein")) {
+            goodDiet = queryFactory.select(foodInfo.name)
+                    .from(foodInfo)
+                    .orderBy(foodInfo.protein.desc())
+                    .limit(1)
+                    .fetchOne();
+        }
+        if (mostLackNutrientName.equals("calcium")) {
+            goodDiet = queryFactory.select(foodInfo.name)
+                    .from(foodInfo)
+                    .orderBy(foodInfo.protein.desc())
+                    .limit(1)
+                    .fetchOne();
+        }
+        if (mostLackNutrientName.equals("sodium")) {
+            goodDiet = queryFactory.select(foodInfo.name)
+                    .from(foodInfo)
+                    .orderBy(foodInfo.protein.desc())
+                    .limit(1)
+                    .fetchOne();
+        }
+        if (mostLackNutrientName.equals("fe")) {
+            goodDiet = queryFactory.select(foodInfo.name)
+                    .from(foodInfo)
+                    .orderBy(foodInfo.protein.desc())
+                    .limit(1)
+                    .fetchOne();
+        } else {
+            goodDiet = queryFactory.select(foodInfo.name)
+                    .from(foodInfo)
+                    .orderBy(foodInfo.protein.desc())
+                    .limit(1)
+                    .fetchOne();
+        }
+
+        return MainPageResponse.of(nutrientInfoList, goodDiet);
+    }
+
+    public String findGoodDiet(List<MainPageResponse.NutrientInfo> nutrientInfoList) {
+        MainPageResponse.NutrientInfo mostLackNutrient = nutrientInfoList.get(0);
+        String mostLackNutrientName = kor2eng(mostLackNutrient.getName());
+
+
+        return "고등어구이";
+    }
+
+    public String kor2eng(String name) {
+        if (name.equals("단백질")) {
+            return "protein";
+        }
+        if (name.equals("칼숨")) {
+            return "calcium";
+        }
+        if (name.equals("나트륨")) {
+            return "sodium";
+        }
+        if (name.equals("철분")) {
+            return "fe";
+        }
+        if (name.equals("아연")) {
+            return "zinc";
+        }
+        return "fe"; // default
     }
 
     @Transactional

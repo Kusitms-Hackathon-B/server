@@ -125,13 +125,13 @@ public class DietService {
         diffHm.put("칼슘", totalDiffCalcium);
         diffHm.put("나트륨", totalDiffSodium);
         diffHm.put("철분", totalDiffFe);
-        diffHm.put("인", totalDiffZinc);
+        diffHm.put("아연", totalDiffZinc);
 
         accuHm.put("단백질", totalAccuProtein);
         accuHm.put("칼슘", totalAccuCalcium);
         accuHm.put("나트륨", totalAccuSodium);
         accuHm.put("철분", totalAccuFe);
-        accuHm.put("인", totalAccuZinc);
+        accuHm.put("아연", totalAccuZinc);
 
         List<GetDietResponse.NutrientInfo> lackList = new ArrayList<>();
         List<GetDietResponse.NutrientInfo> enoughList = new ArrayList<>();

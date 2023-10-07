@@ -23,7 +23,9 @@ public class MemberController {
                     """
                     name 은 영양소 이름이고, amount 는 섭취량, diff: 는 권장 섭취량 - amount 입니다!
                     
-                    부족한 순으로 정렬해서 나갑니다..
+                    부족한 순으로 정렬해서 나갑니다.
+                    
+                    추천 식단(goodDietName)도 같이 반환하도록 수정했습니다.
                     """)
     @GetMapping("/{userId}")
     public ResponseEntity<MainPageResponse> getMainPage(@PathVariable(name = "userId") Long userId) {
