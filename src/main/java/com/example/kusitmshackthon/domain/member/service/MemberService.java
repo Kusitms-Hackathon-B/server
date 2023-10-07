@@ -150,14 +150,6 @@ public class MemberService {
         return MainPageResponse.of(nutrientInfoList, goodDiet);
     }
 
-    public String findGoodDiet(List<MainPageResponse.NutrientInfo> nutrientInfoList) {
-        MainPageResponse.NutrientInfo mostLackNutrient = nutrientInfoList.get(0);
-        String mostLackNutrientName = kor2eng(mostLackNutrient.getName());
-
-
-        return "고등어구이";
-    }
-
     public String kor2eng(String name) {
         if (name.equals("단백질")) {
             return "protein";
