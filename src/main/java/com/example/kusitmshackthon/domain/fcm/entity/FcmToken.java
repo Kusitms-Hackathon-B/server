@@ -19,4 +19,16 @@ public class FcmToken {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    public FcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
+    public static FcmToken of(String fcmToken) {
+        return new FcmToken(fcmToken);
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
 }

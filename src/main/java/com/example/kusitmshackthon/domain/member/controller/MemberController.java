@@ -18,11 +18,11 @@ public class MemberController {
     private final MemberService memberService;
 
     @Operation(summary = "가장 최근에 섭취한 식단에서, 부족한 영양소 top 3 조회", description =
-                    """
+            """
                     name 은 영양소 이름이고, amount 는 섭취량, diff: 는 권장 섭취량 - amount 입니다!
-                    
+                                        
                     부족한 순으로 정렬해서 나갑니다.
-                    
+                                        
                     추천 식단(goodDietName)도 같이 반환하도록 수정했습니다.
                     """)
     @GetMapping("/{userId}")
@@ -31,17 +31,27 @@ public class MemberController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "카카오 회원가입 API 입니다.", description = """
+            email, nickName, age, fcmToken 을 보내주세요.
+            """)
     @PostMapping("/singUp")
     public ResponseEntity<MemberAuthResponseDto> signUp(@RequestParam String email,
                                                         @RequestParam String nickName,
-                                                        @RequestParam int age){
-        MemberAuthResponseDto responseDto = memberService.signUp(email, nickName, age);
+                                                        @RequestParam int age,
+                                                        @RequestParam String fcmToken) {
+        MemberAuthResponseDto responseDto = memberService.signUp(email, nickName, age, fcmToken);
         return ResponseEntity.ok(responseDto);
     }
 
+    @Operation(summary = "카카오 로그인 API 입니다.", description =
+            """
+                    email, fcmToken 을 보내주세요.
+                    """)
     @GetMapping("/signIn")
-    public ResponseEntity<MemberAuthResponseDto> signIn(@RequestParam String email){
-        MemberAuthResponseDto responseDto = memberService.signIn(email);
+    public ResponseEntity<MemberAuthResponseDto> signIn(
+            @RequestParam String email,
+            @RequestParam String fcmToken) {
+        MemberAuthResponseDto responseDto = memberService.signIn(email, fcmToken);
         return ResponseEntity.ok(responseDto);
     }
 
