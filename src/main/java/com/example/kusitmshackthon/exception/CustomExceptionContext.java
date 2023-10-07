@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum CustomExceptionContext implements ExceptionContext {
     // MEMBER 관련 예외
     NOT_FOUND_MEMBER("존재하지 않는 회원을 조회할 수 없습니다.", 1000),
+    DUPLICATE_MEMBER("중복된 유저입니다.", 1001),
 
     // FOOD 관련 예외
     NOT_FOUND_FOOD("존재하지 않는 음식을 조회할 수 없습니다.", 2000),

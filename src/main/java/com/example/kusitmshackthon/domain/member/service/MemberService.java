@@ -8,6 +8,7 @@ import com.example.kusitmshackthon.domain.member.dto.response.MemberAuthResponse
 import com.example.kusitmshackthon.domain.member.entity.Member;
 import com.example.kusitmshackthon.domain.member.entity.QMember;
 import com.example.kusitmshackthon.domain.member.repository.MemberRepository;
+import com.example.kusitmshackthon.exception.badrequest.DuplicateMemberException;
 import com.example.kusitmshackthon.exception.notfound.MemberNotFoundException;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -177,18 +178,30 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberAuthResponseDto signUp(String token, String email, String nickname, int age) {
+    public MemberAuthResponseDto signIn(String email){
+        Member member = getMemberWithEmail(email);
+        return MemberAuthResponseDto.of(member);
+    }
+
+    @Transactional
+    public MemberAuthResponseDto signUp(String email, String nickname, int age) {
         Member craeatedMember = Member.createMember(nickname, age, email);
+        validateDuplicateMember(email);
         saveMember(craeatedMember);
         return MemberAuthResponseDto.of(craeatedMember);
     }
 
-    @Transactional
-    public void saveMember(Member member) {
+    private Member getMemberWithEmail(String email){
+        return memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+    }
+
+    private void saveMember(Member member) {
         memberRepository.save(member);
     }
 
     private void validateDuplicateMember(String email) {
-
+        if(memberRepository.existsMemberByEmail(email)){
+            throw new DuplicateMemberException();
+        }
     }
 }

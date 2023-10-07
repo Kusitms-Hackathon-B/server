@@ -2,15 +2,13 @@ package com.example.kusitmshackthon.domain.member.controller;
 
 
 import com.example.kusitmshackthon.domain.member.dto.response.MainPageResponse;
+import com.example.kusitmshackthon.domain.member.dto.response.MemberAuthResponseDto;
 import com.example.kusitmshackthon.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,4 +30,19 @@ public class MemberController {
         MainPageResponse response = memberService.getMainPage(userId);
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/singUp")
+    public ResponseEntity<MemberAuthResponseDto> signUp(@RequestParam String email,
+                                                        @RequestParam String nickName,
+                                                        @RequestParam int age){
+        MemberAuthResponseDto responseDto = memberService.signUp(email, nickName, age);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/signIn")
+    public ResponseEntity<MemberAuthResponseDto> signIn(@RequestParam String email){
+        MemberAuthResponseDto responseDto = memberService.signIn(email);
+        return ResponseEntity.ok(responseDto);
+    }
+
 }
