@@ -1,6 +1,7 @@
 package com.example.kusitmshackthon.domain.member.dto.response;
 
 
+import com.example.kusitmshackthon.domain.diet.dto.response.PostDietResponse;
 import lombok.*;
 
 import java.util.List;
@@ -19,8 +20,12 @@ public class MainPageResponse {
     @ToString
     public static class NutrientInfo {
         private String name;
-        private Integer plus;
-        private Integer minus;
+        private Float amount;
+        private Float diff;
+
+        public static MainPageResponse.NutrientInfo of (String name, Float amount, Float diff){
+            return new MainPageResponse.NutrientInfo(name, amount, diff);
+        }
     }
 
     public static MainPageResponse of(List<NutrientInfo> nutrientInfoList) {

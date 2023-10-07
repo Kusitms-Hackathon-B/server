@@ -2,6 +2,7 @@ package com.example.kusitmshackthon.domain.member.service;
 
 import com.example.kusitmshackthon.domain.healthlog.entity.HealthLog;
 import com.example.kusitmshackthon.domain.healthlog.repository.HealthLogRepository;
+import com.example.kusitmshackthon.domain.healthlog.standard.StandardHealthLog;
 import com.example.kusitmshackthon.domain.member.dto.response.MainPageResponse;
 import com.example.kusitmshackthon.domain.member.dto.response.MemberAuthResponseDto;
 import com.example.kusitmshackthon.domain.member.entity.Member;
@@ -18,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.example.kusitmshackthon.domain.healthlog.entity.QHealthLog.healthLog;
 
@@ -34,7 +37,6 @@ public class MemberService {
     private EntityManager entityManager;
 
     public MainPageResponse getMainPage(Long userId) {
-        List<MainPageResponse.NutrientInfo> nutrientInfoList = new ArrayList<>();
         Member member = memberRepository.findById(userId)
                 .orElseThrow(MemberNotFoundException::new);
         LocalDate nowDate = LocalDate.now();
@@ -54,8 +56,54 @@ public class MemberService {
                 .orderBy(healthLog.intakeAt.desc())
                 .limit(1)
                 .fetchOne();
+        // 해당 회원의 베스트 영양 정보 get 하기
+        StandardHealthLog standardHealthLog = new StandardHealthLog();
 
-        System.out.println("recentlyHealthLog = " + recentlyHealthLog);
+        Map<String, Float> diffHashMap = new HashMap<>();
+        Map<String, Float> orignHashMap = new HashMap<>();
+
+        orignHashMap.put("protein", recentlyHealthLog.getProtein());
+        orignHashMap.put("calcium", recentlyHealthLog.getCalcium());
+        orignHashMap.put("sodium", recentlyHealthLog.getSodium());
+        orignHashMap.put("fe", recentlyHealthLog.getFe());
+        orignHashMap.put("zinc", recentlyHealthLog.getZinc());
+
+        if (recentlyHealthLog.getProtein() != 0) {
+            diffHashMap.put("protein", recentlyHealthLog.getProtein() - standardHealthLog.getProtein());
+        }
+        if (recentlyHealthLog.getCalcium() != 0) {
+            diffHashMap.put("calcium", recentlyHealthLog.getCalcium() - standardHealthLog.getCalcium());
+        }
+        if (recentlyHealthLog.getSodium() != 0) {
+            diffHashMap.put("sodium", recentlyHealthLog.getSodium() - standardHealthLog.getSodium());
+        }
+        if (recentlyHealthLog.getFe() != 0) {
+            diffHashMap.put("fe", recentlyHealthLog.getFe() - standardHealthLog.getFe());
+        }
+        if (recentlyHealthLog.getZinc() != 0) {
+            diffHashMap.put("zinc", recentlyHealthLog.getZinc() - standardHealthLog.getZinc());
+        }
+
+
+        List<Map.Entry<String, Float>> collect = diffHashMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .toList();
+
+        List<MainPageResponse.NutrientInfo> nutrientInfoList = new ArrayList<>();
+        int cnt = 0;
+        for (Map.Entry<String, Float> entry : collect) {
+            String key = entry.getKey();
+            Float diff = entry.getValue();
+            if (Math.abs(diff) <= 200) {
+                cnt++;
+                nutrientInfoList.add(MainPageResponse.NutrientInfo.of(
+                        key, orignHashMap.get(key), diff
+                ));
+                if (cnt == 3) {
+                    break;
+                }
+            }
+        }
 
         return MainPageResponse.of(nutrientInfoList);
     }
