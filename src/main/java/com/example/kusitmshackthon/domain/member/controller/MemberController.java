@@ -59,7 +59,7 @@ public class MemberController {
             """
                     email, fcmToken 을 보내주세요.
                     """)
-    @GetMapping("/signIn")
+    @PostMapping("/signIn")
     public ResponseEntity<MemberAuthResponseDto> signIn(
             @RequestBody SignInRequest request) {
         MemberAuthResponseDto responseDto = memberService.signIn(request);
