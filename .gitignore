@@ -43,4 +43,4 @@ out/
 src/main/resources/application.yml
 
 ### firebase SDK ###
-src/main/resources/firebase/ssang-1a9ab-firebase-adminsdk-7nen2-2c1210a093.json
+src/main/resources/firebase/*
