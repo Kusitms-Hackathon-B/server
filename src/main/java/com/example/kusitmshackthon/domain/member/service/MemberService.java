@@ -197,10 +197,24 @@ public class MemberService {
         return MemberAuthResponseDto.of(craeatedMember);
     }
 
+    @Transactional
+    public void memberDelete(Long userId) {
+        Member member = getMemberWithId(userId);
+        deleteMemberWithObject(member);
+    }
+
     public void patchFCMtoken(Member member, String fcmToken) {
         FcmToken token = FcmToken.of(fcmToken);
         token.setMember(member);
         fcmRepository.save(token);
+    }
+
+    private void deleteMemberWithObject(Member member){
+        memberRepository.delete(member);
+    }
+
+    private Member getMemberWithId(Long userId){
+        return memberRepository.findById(userId).orElseThrow(MemberNotFoundException::new);
     }
 
     private Member getMemberWithEmail(String email) {
@@ -216,8 +230,6 @@ public class MemberService {
             throw new DuplicateMemberException();
         }
     }
-
-
 
     public GetPreviousDietInfoResponse getPreviousDietInfo(Long userId) {
         Member member = memberRepository.findById(userId)
