@@ -180,7 +180,7 @@ public class MemberService {
         String email = request.getEmail();
         String fcmToken = request.getFcmToken();
         Member member = getMemberWithEmail(email);
-        patchFCMtoken(member.getId(), fcmToken);
+        patchFCMtoken(member, fcmToken);
         return MemberAuthResponseDto.of(member);
     }
 
@@ -190,20 +190,17 @@ public class MemberService {
         String nickname = request.getNickName();
         int age = request.getAge();
         String fcmToken = request.getFcmToken();
-
         Member craeatedMember = Member.createMember(nickname, age, email);
         validateDuplicateMember(email);
         saveMember(craeatedMember);
-        patchFCMtoken(craeatedMember.getId(), fcmToken);
+        patchFCMtoken(craeatedMember, fcmToken);
         return MemberAuthResponseDto.of(craeatedMember);
     }
 
-    @Transactional
-    public void patchFCMtoken(Long userId, String fcmToken) {
-        FcmToken token = fcmRepository.save(FcmToken.of(fcmToken));
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(MemberNotFoundException::new);
+    public void patchFCMtoken(Member member, String fcmToken) {
+        FcmToken token = FcmToken.of(fcmToken);
         token.setMember(member);
+        fcmRepository.save(token);
     }
 
     private Member getMemberWithEmail(String email) {
