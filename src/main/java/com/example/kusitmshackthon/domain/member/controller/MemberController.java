@@ -66,5 +66,9 @@ public class MemberController {
         return ResponseEntity.ok(responseDto);
     }
 
-
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<?> logout(@RequestParam Long userId) {
+        memberService.memberDelete(userId);
+        return ResponseEntity.ok(null);
+    }
 }
