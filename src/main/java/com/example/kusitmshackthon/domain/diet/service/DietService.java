@@ -17,7 +17,6 @@ import com.example.kusitmshackthon.exception.notfound.DietNotFoundException;
 import com.example.kusitmshackthon.exception.notfound.FoodInfoNotFoundException;
 import com.example.kusitmshackthon.exception.notfound.MemberNotFoundException;
 import com.example.kusitmshackthon.support.APIOpenFeign;
-import com.example.kusitmshackthon.support.dto.response.FlaskResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -49,9 +48,11 @@ public class DietService {
         Diet diet = dietRepository.save(Diet.of(member));
 
         // ai 모델로부터 얻어낸 음식 리스트 get
-        FlaskResponse response = apiOpenFeign.call(image);
+        String response = apiOpenFeign.call(image);
 
-        List<String> foodNameList = response.getFoodNameList();
+        List<String> foodNameList = new ArrayList<>();
+        foodNameList.add(response);
+        //List<String> foodNameList = response.getFoodNameList();
         List<Food> foodEntities = new ArrayList<>();
 
         for (String foodName : foodNameList) {
@@ -140,9 +141,9 @@ public class DietService {
             Float diff = entry.getValue();
 
             if (diff >= 0) {
-                enoughList.add(GetDietResponse.NutrientInfo.of(name, accuHm.get(name),  diff));
+                enoughList.add(GetDietResponse.NutrientInfo.of(name, accuHm.get(name), diff));
             } else {
-                lackList.add(GetDietResponse.NutrientInfo.of(name, accuHm.get(name),  diff));
+                lackList.add(GetDietResponse.NutrientInfo.of(name, accuHm.get(name), diff));
             }
         }
         return GetDietResponse.of(lackList, enoughList);
