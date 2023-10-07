@@ -1,6 +1,7 @@
 package com.example.kusitmshackthon.domain.member.controller;
 
 
+import com.example.kusitmshackthon.domain.member.dto.request.SignUpRequest;
 import com.example.kusitmshackthon.domain.member.dto.response.GetPreviousDietInfoResponse;
 import com.example.kusitmshackthon.domain.member.dto.response.MainPageResponse;
 import com.example.kusitmshackthon.domain.member.dto.response.MemberAuthResponseDto;
@@ -48,11 +49,8 @@ public class MemberController {
             email, nickName, age, fcmToken 을 보내주세요.
             """)
     @PostMapping("/singUp")
-    public ResponseEntity<MemberAuthResponseDto> signUp(@RequestParam String email,
-                                                        @RequestParam String nickName,
-                                                        @RequestParam int age,
-                                                        @RequestParam String fcmToken) {
-        MemberAuthResponseDto responseDto = memberService.signUp(email, nickName, age, fcmToken);
+    public ResponseEntity<MemberAuthResponseDto> signUp(@RequestBody SignUpRequest request) {
+        MemberAuthResponseDto responseDto = memberService.signUp(request);
         return ResponseEntity.ok(responseDto);
     }
 

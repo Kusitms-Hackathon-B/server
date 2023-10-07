@@ -5,6 +5,7 @@ import com.example.kusitmshackthon.domain.fcm.repository.FCMRepository;
 import com.example.kusitmshackthon.domain.healthlog.entity.HealthLog;
 import com.example.kusitmshackthon.domain.healthlog.repository.HealthLogRepository;
 import com.example.kusitmshackthon.domain.healthlog.standard.StandardHealthLog;
+import com.example.kusitmshackthon.domain.member.dto.request.SignUpRequest;
 import com.example.kusitmshackthon.domain.member.dto.response.GetPreviousDietInfoResponse;
 import com.example.kusitmshackthon.domain.member.dto.response.MainPageResponse;
 import com.example.kusitmshackthon.domain.member.dto.response.MemberAuthResponseDto;
@@ -181,7 +182,12 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberAuthResponseDto signUp(String email, String nickname, int age, String fcmToken) {
+    public MemberAuthResponseDto signUp(SignUpRequest request) {
+        String email = request.getEmail();
+        String nickname = request.getNickName();
+        int age = request.getAge();
+        String fcmToken = request.getFcmToken();
+
         Member craeatedMember = Member.createMember(nickname, age, email);
         validateDuplicateMember(email);
         saveMember(craeatedMember);
