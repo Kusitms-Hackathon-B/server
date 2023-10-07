@@ -41,13 +41,18 @@ public class DietService {
     @Transactional
     public ImageUploadResponse analysUserDiet(MultipartFile image, Long userId) {
         // 회원 조회
+        if (Objects.isNull(image)) {
+            log.error("[이미지 파일이 NULL 입니다.]");
+        } else {
+            log.info("[이미지 파일이 NULL 이 아닙니다.]");
+        }
         Member member = memberRepository.findById(userId)
                 .orElseThrow(MemberNotFoundException::new);
         Diet diet = dietRepository.save(Diet.of(member));
 
         // ai 모델로부터 얻어낸 음식 리스트 get
         String response = apiOpenFeign.call(image);
-
+        log.info("[AI MODEL 예측 결과] = {}", response);
         List<String> foodNameList = new ArrayList<>();
         foodNameList.add(response);
         //List<String> foodNameList = response.getFoodNameList();
