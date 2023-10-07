@@ -1,5 +1,6 @@
 package com.example.kusitmshackthon.domain.diet.controller;
 
+import com.example.kusitmshackthon.domain.diet.dto.request.ImageUploadRequest;
 import com.example.kusitmshackthon.domain.diet.dto.response.GetDietResponse;
 import com.example.kusitmshackthon.domain.diet.dto.response.GetGoodDietsResponse;
 import com.example.kusitmshackthon.domain.diet.dto.response.ImageUploadResponse;
@@ -35,6 +36,24 @@ public class DietController {
     @PostMapping("/{userId}")
     public ResponseEntity<ImageUploadResponse> postDiet(
             @RequestParam("image") final MultipartFile image,
+            @PathVariable("userId") Long userId) {
+        ImageUploadResponse response = dietService.analysUserDiet(image, userId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @Operation(summary = "식단 등록/기록(with image)", description = """
+            식단 이미지와 유저 ID 를 보내면 영양소 정보를 분석하고,
+                        
+            식단 ID 를 반환합니다.
+                        
+            식단 이미지는 RequestParam MultipartFile 형식으로, 이름은 반드시 image 로 넘겨주세요!
+                        
+            해당 식단의 분석 정보 api 에서 식단 ID 를 넘겨서 분석 정보를 받을 수 있습니다.
+            """)
+    @PostMapping("/{userId}/v2")
+    public ResponseEntity<ImageUploadResponse> postDietV2(
+            @RequestPart("image") final MultipartFile image,
             @PathVariable("userId") Long userId) {
         ImageUploadResponse response = dietService.analysUserDiet(image, userId);
         return ResponseEntity.status(HttpStatus.CREATED)
