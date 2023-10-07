@@ -27,6 +27,8 @@ public class DietController {
             
             식단 ID 를 반환합니다.
             
+            식단 이미지는 RequestParam MultipartFile 형식으로, 이름은 반드시 image 로 넘겨주세요!
+            
             해당 식단의 분석 정보 api 에서 식단 ID 를 넘겨서 분석 정보를 받을 수 있습니다.
             """)
     @PostMapping("/{userId}")
