@@ -25,7 +25,7 @@ public class HealthLog {
     private Member member;
 
     LocalDateTime intakeAt; // 식사(섭취) 시간
-    LocalDate intakeTime;
+    LocalDate intakeDate;
 
     // 영양 정보
     Float weight; // 중량(g)
@@ -60,7 +60,7 @@ public class HealthLog {
         this.calcium = foodInfo.getCalcium();
         this.cholesterol = foodInfo.getCholesterol();
         this.intakeAt = LocalDateTime.now(); // 생성 시점으로 저장
-        this.intakeTime = LocalDate.now();
+        this.intakeDate = LocalDate.now();
     }
 
     public void setMember(Member member) {

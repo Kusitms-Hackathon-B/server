@@ -1,4 +1,5 @@
-package com.example.kusitmshackthon.domain.diet.dto.response;
+package com.example.kusitmshackthon.domain.member.dto.response;
+
 
 import lombok.*;
 
@@ -8,9 +9,9 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ToString
-public class PostDietResponse {
-    List<NutrientInfo> lackList;
-    List<NutrientInfo> enoughList;
+public class MainPageResponse {
+
+    List<NutrientInfo> nutrientInfoList;
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,8 +19,11 @@ public class PostDietResponse {
     @ToString
     public static class NutrientInfo {
         private String name;
-        private Integer amount;
         private Integer plus;
         private Integer minus;
+    }
+
+    public static MainPageResponse of(List<NutrientInfo> nutrientInfoList) {
+        return new MainPageResponse(nutrientInfoList);
     }
 }

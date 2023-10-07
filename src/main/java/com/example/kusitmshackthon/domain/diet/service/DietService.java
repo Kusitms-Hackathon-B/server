@@ -61,6 +61,7 @@ public class DietService {
         }
         diet.setFoodList(foodEntities); // 해당 식단에 어떤 음식들이 포함되어 있는지 설정함.
         // create dummy data // todo: remove it
+
         List<PostDietResponse.NutrientInfo> lackList = new ArrayList<>();
         List<PostDietResponse.NutrientInfo> enoughList = new ArrayList<>();
         lackList.add(new PostDietResponse.NutrientInfo("탄수화물", 110, 0, 20));
