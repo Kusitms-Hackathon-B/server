@@ -7,6 +7,8 @@ import com.example.kusitmshackthon.domain.food.entity.Food;
 import com.example.kusitmshackthon.domain.food.repository.FoodRepository;
 import com.example.kusitmshackthon.domain.foodinfo.FoodInfoRepository;
 import com.example.kusitmshackthon.domain.foodinfo.entity.FoodInfo;
+import com.example.kusitmshackthon.domain.healthlog.entity.HealthLog;
+import com.example.kusitmshackthon.domain.healthlog.repository.HealthLogRepository;
 import com.example.kusitmshackthon.domain.member.entity.Member;
 import com.example.kusitmshackthon.domain.member.repository.MemberRepository;
 import com.example.kusitmshackthon.exception.notfound.FoodInfoNotFoundException;
@@ -20,9 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -34,6 +34,7 @@ public class DietService {
     private final MemberRepository memberRepository;
     private final FoodRepository foodRepository;
     private final FoodInfoRepository foodInfoRepository;
+    private final HealthLogRepository healthLogRepository;
 
     @Transactional
     public PostDietResponse analysUserDiet(MultipartFile image, Long userId) {
@@ -55,16 +56,10 @@ public class DietService {
             food.setDiet(diet); // 연관관계 설정
             FoodInfo foodInfo = foodInfoRepository.findByName(food.getName())
                     .orElseThrow(FoodInfoNotFoundException::new);
-            System.out.println("foodInfo.getName() = " + foodInfo.getName());
+            HealthLog healthLog = healthLogRepository.save(HealthLog.of(foodInfo));
+            healthLog.setMember(member);
         }
         diet.setFoodList(foodEntities); // 해당 식단에 어떤 음식들이 포함되어 있는지 설정함.
-
-
-
-
-
-
-
         // create dummy data // todo: remove it
         List<PostDietResponse.NutrientInfo> lackList = new ArrayList<>();
         List<PostDietResponse.NutrientInfo> enoughList = new ArrayList<>();
