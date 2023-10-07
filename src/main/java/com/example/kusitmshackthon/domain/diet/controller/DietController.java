@@ -37,6 +37,7 @@ public class DietController {
     public ResponseEntity<ImageUploadResponse> postDiet(
             @RequestParam("image") final MultipartFile image,
             @PathVariable("userId") Long userId) {
+        log.info("[이미지 업로드 API 가 호출됨(v1)]");
         ImageUploadResponse response = dietService.analysUserDiet(image, userId);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
@@ -55,6 +56,7 @@ public class DietController {
     public ResponseEntity<ImageUploadResponse> postDietV2(
             @RequestPart("image") final MultipartFile image,
             @PathVariable("userId") Long userId) {
+        log.info("[이미지 업로드 API 가 호출됨(v2)]");
         ImageUploadResponse response = dietService.analysUserDiet(image, userId);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
