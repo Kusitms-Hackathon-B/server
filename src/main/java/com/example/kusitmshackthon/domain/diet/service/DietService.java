@@ -1,6 +1,7 @@
 package com.example.kusitmshackthon.domain.diet.service;
 
-import com.example.kusitmshackthon.domain.diet.dto.response.PostDietResponse;
+import com.example.kusitmshackthon.domain.diet.dto.response.GetDietResponse;
+import com.example.kusitmshackthon.domain.diet.dto.response.ImageUploadResponse;
 import com.example.kusitmshackthon.domain.diet.entity.Diet;
 import com.example.kusitmshackthon.domain.diet.repository.DietRepository;
 import com.example.kusitmshackthon.domain.food.entity.Food;
@@ -9,8 +10,10 @@ import com.example.kusitmshackthon.domain.foodinfo.FoodInfoRepository;
 import com.example.kusitmshackthon.domain.foodinfo.entity.FoodInfo;
 import com.example.kusitmshackthon.domain.healthlog.entity.HealthLog;
 import com.example.kusitmshackthon.domain.healthlog.repository.HealthLogRepository;
+import com.example.kusitmshackthon.domain.healthlog.standard.StandardHealthLog;
 import com.example.kusitmshackthon.domain.member.entity.Member;
 import com.example.kusitmshackthon.domain.member.repository.MemberRepository;
+import com.example.kusitmshackthon.exception.notfound.DietNotFoundException;
 import com.example.kusitmshackthon.exception.notfound.FoodInfoNotFoundException;
 import com.example.kusitmshackthon.exception.notfound.MemberNotFoundException;
 import com.example.kusitmshackthon.support.APIOpenFeign;
@@ -22,7 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -37,7 +42,7 @@ public class DietService {
     private final HealthLogRepository healthLogRepository;
 
     @Transactional
-    public PostDietResponse analysUserDiet(MultipartFile image, Long userId) {
+    public ImageUploadResponse analysUserDiet(MultipartFile image, Long userId) {
         // 회원 조회
         Member member = memberRepository.findById(userId)
                 .orElseThrow(MemberNotFoundException::new);
@@ -60,13 +65,87 @@ public class DietService {
             healthLog.setMember(member);
         }
         diet.setFoodList(foodEntities); // 해당 식단에 어떤 음식들이 포함되어 있는지 설정함.
-        // create dummy data // todo: remove it
-
-        List<PostDietResponse.NutrientInfo> lackList = new ArrayList<>();
-        List<PostDietResponse.NutrientInfo> enoughList = new ArrayList<>();
-        lackList.add(new PostDietResponse.NutrientInfo("탄수화물", 110, 0, 20));
-        enoughList.add(new PostDietResponse.NutrientInfo("칼슘", 120, 10, 0));
-        enoughList.add(new PostDietResponse.NutrientInfo("단백질", 130, 20, 0));
-        return new PostDietResponse(lackList, enoughList); // todo
+        return new ImageUploadResponse(diet.getId());
     }
+
+    public GetDietResponse getDietDetails(Long dietId) {
+        Diet diet = dietRepository.findById(dietId)
+                .orElseThrow(DietNotFoundException::new);
+
+        List<FoodInfo> foodInfoList = diet.getFoodList()
+                .stream()
+                .map(
+                        food -> foodInfoRepository.findByName(food.getName())
+                                .orElseThrow(FoodInfoNotFoundException::new)
+                ).toList();
+
+        StandardHealthLog standardHealthLog = new StandardHealthLog();
+
+        Float totalDiffProtein = 0F;
+        Float totalDiffCalcium = 0F;
+        Float totalDiffSodium = 0F;
+        Float totalDiffFe = 0F;
+        Float totalDiffZinc = 0F;
+
+        Float totalAccuProtein = 0F;
+        Float totalAccuCalcium = 0F;
+        Float totalAccuSodium = 0F;
+        Float totalAccuFe = 0F;
+        Float totalAccuZinc = 0F;
+
+        for (FoodInfo foodInfo : foodInfoList) {
+            Float protein = foodInfo.getProtein();
+            Float calcium = foodInfo.getCalcium();
+            Float sodium = foodInfo.getSodium();
+            Float fe = foodInfo.getFe();
+            Float zinc = foodInfo.getZinc();
+
+            Float stdProtein = standardHealthLog.getProtein();
+            Float stdCalcium = standardHealthLog.getCalcium();
+            Float stdSodium = standardHealthLog.getSodium();
+            Float stdFe = standardHealthLog.getFe();
+            Float stdZinc = standardHealthLog.getZinc();
+
+            totalDiffProtein += stdProtein - protein;
+            totalDiffCalcium += stdCalcium - calcium;
+            totalDiffSodium += stdSodium - sodium;
+            totalDiffFe += stdFe - fe;
+            totalDiffZinc += stdZinc - zinc;
+
+            totalAccuProtein += protein;
+            totalAccuCalcium += calcium;
+            totalAccuSodium += sodium;
+            totalAccuFe += fe;
+            totalAccuZinc += zinc;
+        }
+
+        Map<String, Float> diffHm = new HashMap<>();
+        Map<String, Float> accuHm = new HashMap<>();
+        diffHm.put("단백질", totalDiffProtein);
+        diffHm.put("칼슘", totalDiffCalcium);
+        diffHm.put("나트륨", totalDiffSodium);
+        diffHm.put("철분", totalDiffFe);
+        diffHm.put("인", totalDiffZinc);
+
+        accuHm.put("단백질", totalAccuProtein);
+        accuHm.put("칼슘", totalAccuCalcium);
+        accuHm.put("나트륨", totalAccuSodium);
+        accuHm.put("철분", totalAccuFe);
+        accuHm.put("인", totalAccuZinc);
+
+        List<GetDietResponse.NutrientInfo> lackList = new ArrayList<>();
+        List<GetDietResponse.NutrientInfo> enoughList = new ArrayList<>();
+        for (Map.Entry<String, Float> entry : diffHm.entrySet()) {
+            String name = entry.getKey();
+            Float diff = entry.getValue();
+
+            if (diff >= 0) {
+                enoughList.add(GetDietResponse.NutrientInfo.of(name, accuHm.get(name),  diff));
+            } else {
+                lackList.add(GetDietResponse.NutrientInfo.of(name, accuHm.get(name),  diff));
+            }
+        }
+        return GetDietResponse.of(lackList, enoughList);
+    }
+
 }

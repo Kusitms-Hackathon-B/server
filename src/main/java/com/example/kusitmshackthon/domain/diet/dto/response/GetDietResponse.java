@@ -8,9 +8,13 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ToString
-public class PostDietResponse {
+public class GetDietResponse {
     List<NutrientInfo> lackList;
     List<NutrientInfo> enoughList;
+
+    public static GetDietResponse of(List<NutrientInfo> lackList, List<NutrientInfo> enoughList) {
+        return new GetDietResponse(lackList, enoughList);
+    }
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,8 +22,11 @@ public class PostDietResponse {
     @ToString
     public static class NutrientInfo {
         private String name;
-        private Integer amount;
-        private Integer plus;
-        private Integer minus;
+        private Float amount;
+        private Float diff;
+
+        public static NutrientInfo of(String name, Float amount, Float diff) {
+            return new NutrientInfo(name, amount, diff);
+        }
     }
 }
