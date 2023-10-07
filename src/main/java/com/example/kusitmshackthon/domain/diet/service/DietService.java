@@ -63,7 +63,7 @@ public class DietService {
             foodRepository.save(food);
             foodEntities.add(food);
             food.setDiet(diet); // 연관관계 설정
-            FoodInfo foodInfo = foodInfoRepository.findByName(food.getName())
+            FoodInfo foodInfo = foodInfoRepository.findByName(response)
                     .orElseThrow(FoodInfoNotFoundException::new);
             HealthLog healthLog = healthLogRepository.save(HealthLog.of(foodInfo));
             healthLog.setMember(member);
