@@ -1,5 +1,7 @@
 package com.example.kusitmshackthon.domain.member.service;
 
+import com.example.kusitmshackthon.domain.fcm.entity.FcmToken;
+import com.example.kusitmshackthon.domain.fcm.repository.FCMRepository;
 import com.example.kusitmshackthon.domain.healthlog.entity.HealthLog;
 import com.example.kusitmshackthon.domain.healthlog.repository.HealthLogRepository;
 import com.example.kusitmshackthon.domain.healthlog.standard.StandardHealthLog;
@@ -34,6 +36,7 @@ import static com.example.kusitmshackthon.domain.healthlog.entity.QHealthLog.hea
 public class MemberService {
     private final MemberRepository memberRepository;
     private final HealthLogRepository healthLogRepository;
+    private final FCMRepository fcmRepository;
     private JPAQueryFactory queryFactory;
     @PersistenceContext
     private EntityManager entityManager;
@@ -150,14 +153,6 @@ public class MemberService {
         return MainPageResponse.of(nutrientInfoList, goodDiet);
     }
 
-    public String findGoodDiet(List<MainPageResponse.NutrientInfo> nutrientInfoList) {
-        MainPageResponse.NutrientInfo mostLackNutrient = nutrientInfoList.get(0);
-        String mostLackNutrientName = kor2eng(mostLackNutrient.getName());
-
-
-        return "고등어구이";
-    }
-
     public String kor2eng(String name) {
         if (name.equals("단백질")) {
             return "protein";
@@ -178,20 +173,30 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberAuthResponseDto signIn(String email){
+    public MemberAuthResponseDto signIn(String email, String fcmToken) {
         Member member = getMemberWithEmail(email);
+        patchFCMtoken(member.getId(), fcmToken);
         return MemberAuthResponseDto.of(member);
     }
 
     @Transactional
-    public MemberAuthResponseDto signUp(String email, String nickname, int age) {
+    public MemberAuthResponseDto signUp(String email, String nickname, int age, String fcmToken) {
         Member craeatedMember = Member.createMember(nickname, age, email);
         validateDuplicateMember(email);
         saveMember(craeatedMember);
+        patchFCMtoken(craeatedMember.getId(), fcmToken);
         return MemberAuthResponseDto.of(craeatedMember);
     }
 
-    private Member getMemberWithEmail(String email){
+    @Transactional
+    public void patchFCMtoken(Long userId, String fcmToken) {
+        FcmToken token = fcmRepository.save(FcmToken.of(fcmToken));
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(MemberNotFoundException::new);
+        token.setMember(member);
+    }
+
+    private Member getMemberWithEmail(String email) {
         return memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
     }
 
@@ -200,8 +205,9 @@ public class MemberService {
     }
 
     private void validateDuplicateMember(String email) {
-        if(memberRepository.existsMemberByEmail(email)){
+        if (memberRepository.existsMemberByEmail(email)) {
             throw new DuplicateMemberException();
         }
     }
+
 }
