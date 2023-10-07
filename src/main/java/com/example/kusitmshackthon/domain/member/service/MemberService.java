@@ -8,9 +8,15 @@ import com.example.kusitmshackthon.domain.member.entity.QMember;
 import com.example.kusitmshackthon.domain.member.repository.MemberRepository;
 import com.example.kusitmshackthon.exception.notfound.MemberNotFoundException;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,17 +26,22 @@ import static com.example.kusitmshackthon.domain.healthlog.entity.QHealthLog.hea
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
     private final HealthLogRepository healthLogRepository;
     private JPAQueryFactory queryFactory;
-
+    @PersistenceContext
+    private EntityManager entityManager;
     public MainPageResponse getMainPage(Long userId) {
         List<MainPageResponse.NutrientInfo> nutrientInfoList = new ArrayList<>();
         Member member = memberRepository.findById(userId)
                 .orElseThrow(MemberNotFoundException::new);
         LocalDate nowDate = LocalDate.now();
+
+        queryFactory = new JPAQueryFactory(entityManager);
+
         List<HealthLog> healthLogs
                 = healthLogRepository.findByMemberIdAndIntakeDateEquals(userId, nowDate);
         // 해당 회원의 식사
@@ -45,8 +56,7 @@ public class MemberService {
                 .limit(1)
                 .fetchOne();
 
-        
-
+        System.out.println("recentlyHealthLog = " + recentlyHealthLog);
 
         return MainPageResponse.of(nutrientInfoList);
     }
