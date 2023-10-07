@@ -1,6 +1,7 @@
 package com.example.kusitmshackthon.domain.member.entity;
 
 import com.example.kusitmshackthon.domain.diet.entity.Diet;
+import com.example.kusitmshackthon.domain.fcm.entity.FcmToken;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,4 +28,7 @@ public class Member {
 
     @OneToMany(mappedBy =  "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Diet> dietList = new ArrayList<>();
+
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private FcmToken fcmToken;
 }
