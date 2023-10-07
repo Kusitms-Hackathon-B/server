@@ -15,7 +15,7 @@ import java.io.InputStream;
 public class FcmConfig {
     @Bean
     FirebaseApp firebaseApp() throws IOException {
-        ClassPathResource resource = new ClassPathResource("firebase/ssang-1a9ab-firebase-adminsdk-7nen2-2c1210a093.json");
+        ClassPathResource resource = new ClassPathResource("firebase/jjikmuk-565f5-firebase-adminsdk-jh8u1-9f9aef4cad.json");
         InputStream refreshToken = resource.getInputStream();
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(refreshToken))
