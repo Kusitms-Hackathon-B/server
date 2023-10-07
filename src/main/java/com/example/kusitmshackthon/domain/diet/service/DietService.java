@@ -1,6 +1,7 @@
 package com.example.kusitmshackthon.domain.diet.service;
 
 import com.example.kusitmshackthon.domain.diet.dto.response.GetDietResponse;
+import com.example.kusitmshackthon.domain.diet.dto.response.GetGoodDietsResponse;
 import com.example.kusitmshackthon.domain.diet.dto.response.ImageUploadResponse;
 import com.example.kusitmshackthon.domain.diet.entity.Diet;
 import com.example.kusitmshackthon.domain.diet.repository.DietRepository;
@@ -23,10 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -149,4 +147,36 @@ public class DietService {
         return GetDietResponse.of(lackList, enoughList);
     }
 
+    public GetGoodDietsResponse getGoodDiets() {
+        Random random = new Random();
+        long id = random.nextLong(400);
+        if (id == 0) {
+            id++;
+        }
+        long prev = id;
+        FoodInfo first = foodInfoRepository.findById(id)
+                .orElseThrow(FoodInfoNotFoundException::new);
+
+        id = random.nextLong(400);
+        if (prev == id) {
+            id = random.nextLong(400);
+        }
+        prev = id;
+        FoodInfo second = foodInfoRepository.findById(id)
+                .orElseThrow(FoodInfoNotFoundException::new);
+
+        id = random.nextLong(400);
+        if (prev == id) {
+            id = random.nextLong(400);
+        }
+        prev = id;
+        FoodInfo third = foodInfoRepository.findById(id)
+                .orElseThrow(FoodInfoNotFoundException::new);
+
+        List<String> dietNames = new ArrayList<>();
+        dietNames.add(first.getName());
+        dietNames.add(second.getName());
+        dietNames.add(third.getName());
+        return new GetGoodDietsResponse(dietNames);
+    }
 }
