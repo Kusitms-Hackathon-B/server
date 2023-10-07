@@ -1,6 +1,7 @@
 package com.example.kusitmshackthon.domain.member.controller;
 
 
+import com.example.kusitmshackthon.domain.member.dto.request.SignInRequest;
 import com.example.kusitmshackthon.domain.member.dto.request.SignUpRequest;
 import com.example.kusitmshackthon.domain.member.dto.response.GetPreviousDietInfoResponse;
 import com.example.kusitmshackthon.domain.member.dto.response.MainPageResponse;
@@ -60,9 +61,8 @@ public class MemberController {
                     """)
     @GetMapping("/signIn")
     public ResponseEntity<MemberAuthResponseDto> signIn(
-            @RequestParam String email,
-            @RequestParam String fcmToken) {
-        MemberAuthResponseDto responseDto = memberService.signIn(email, fcmToken);
+            @RequestBody SignInRequest request) {
+        MemberAuthResponseDto responseDto = memberService.signIn(request);
         return ResponseEntity.ok(responseDto);
     }
 
