@@ -1,7 +1,6 @@
 package com.example.kusitmshackthon.domain.member.dto.response;
 
 
-import com.example.kusitmshackthon.domain.diet.dto.response.PostDietResponse;
 import lombok.*;
 
 import java.util.List;

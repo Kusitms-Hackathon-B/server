@@ -26,7 +26,9 @@ public enum CustomExceptionContext implements ExceptionContext {
     // Fcm 메세지 전송 실패 예외
     FCM_MESSAGING_FAILED("Fcm 메세지 전송에 싫패하였습니다.", 6000),
 
-    KAKAO_UNAUTHORIZED("Kakao access token이 올바르지 않습니다", 7000)
+    KAKAO_UNAUTHORIZED("Kakao access token이 올바르지 않습니다", 7000),
+
+    NOT_FOUND_DIET("해당 식단에 관한 정보가 없습니다.", 8000),
     ;
     private final String message;
     private final int code;
