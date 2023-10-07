@@ -26,4 +26,16 @@ public class Food {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "food_info_id")
     private FoodInfo foodInfo;
+
+    public Food(String name) {
+        this.name = name;
+    }
+
+    public void setDiet(Diet diet) {
+        this.diet = diet;
+    }
+
+    public static Food of(String name) {
+        return new Food(name);
+    }
 }
