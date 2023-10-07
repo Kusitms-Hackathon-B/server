@@ -24,7 +24,10 @@ public enum CustomExceptionContext implements ExceptionContext {
     FILE_INVALID_REQUEST("S3 파일 형식이 유효하지 않습니다.", 5003),
 
     // Fcm 메세지 전송 실패 예외
-    FCM_MESSAGING_FAILED("Fcm 메세지 전송에 싫패하였습니다.", 6000);
+    FCM_MESSAGING_FAILED("Fcm 메세지 전송에 싫패하였습니다.", 6000),
+
+    KAKAO_UNAUTHORIZED("Kakao access token이 올바르지 않습니다", 7000)
+    ;
     private final String message;
     private final int code;
 }

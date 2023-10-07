@@ -3,18 +3,16 @@ package com.example.kusitmshackthon.domain.member.service;
 import com.example.kusitmshackthon.domain.healthlog.entity.HealthLog;
 import com.example.kusitmshackthon.domain.healthlog.repository.HealthLogRepository;
 import com.example.kusitmshackthon.domain.member.dto.response.MainPageResponse;
+import com.example.kusitmshackthon.domain.member.dto.response.MemberAuthResponseDto;
 import com.example.kusitmshackthon.domain.member.entity.Member;
 import com.example.kusitmshackthon.domain.member.entity.QMember;
 import com.example.kusitmshackthon.domain.member.repository.MemberRepository;
 import com.example.kusitmshackthon.exception.notfound.MemberNotFoundException;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +32,7 @@ public class MemberService {
     private JPAQueryFactory queryFactory;
     @PersistenceContext
     private EntityManager entityManager;
+
     public MainPageResponse getMainPage(Long userId) {
         List<MainPageResponse.NutrientInfo> nutrientInfoList = new ArrayList<>();
         Member member = memberRepository.findById(userId)
@@ -59,5 +58,21 @@ public class MemberService {
         System.out.println("recentlyHealthLog = " + recentlyHealthLog);
 
         return MainPageResponse.of(nutrientInfoList);
+    }
+
+    @Transactional
+    public MemberAuthResponseDto signUp(String token, String email, String nickname, int age) {
+        Member craeatedMember = Member.createMember(nickname, age, email);
+        saveMember(craeatedMember);
+        return MemberAuthResponseDto.of(craeatedMember);
+    }
+
+    @Transactional
+    public void saveMember(Member member) {
+        memberRepository.save(member);
+    }
+
+    private void validateDuplicateMember(String email) {
+
     }
 }
