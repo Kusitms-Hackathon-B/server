@@ -31,9 +31,20 @@ public class Diet {
     @JoinColumn(name = "member_id")
     private Member member;
 
-
-    //@OneToMany(mappedBy =  "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @OneToMany(mappedBy =  "diet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "diet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Food> foodList = new ArrayList<>();
+
+    public Diet(Member member) {
+        this.member = member;
+    }
+
+    public static Diet of(Member member) {
+        return new Diet(member);
+    }
+
+    public void setFoodList(List<Food> foodList) {
+        this.foodList = foodList;
+    }
+
 
 }
